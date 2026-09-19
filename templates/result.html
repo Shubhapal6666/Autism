@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Result — AutismAI{% endblock %}
+
+{% block content %}
+<div class="result-page">
+
+    <div class="result-card {% if prediction == 1 %}result-positive{% else %}result-negative{% endif %}">
+        <div class="result-icon">
+            {% if prediction == 1 %}⚠️{% else %}✅{% endif %}
+        </div>
+        <h1>{{ result }}</h1>
+        <p class="result-confidence">Model Confidence: <strong>{{ confidence }}%</strong></p>
+    </div>
+
+    <div class="prob-card">
+        <h2>Probability Breakdown</h2>
+
+        <div class="prob-row">
+            <span>No Autism</span>
+            <div class="prob-bar-bg">
+                <div class="prob-bar-fill green-fill" style="width: {{ no_autism_prob }}%"></div>
+            </div>
+            <span class="prob-num">{{ no_autism_prob }}%</span>
+        </div>
+
+        <div class="prob-row">
+            <span>Autism</span>
+            <div class="prob-bar-bg">
+                <div class="prob-bar-fill red-fill" style="width: {{ autism_prob }}%"></div>
+            </div>
+            <span class="prob-num">{{ autism_prob }}%</span>
+        </div>
+    </div>
+
+    <div class="advice-card">
+        {% if prediction == 1 %}
+        <h2>⚠️ What to do next</h2>
+        <ul>
+            <li>Consult a licensed psychiatrist or psychologist for a formal evaluation.</li>
+            <li>Contact your nearest autism support center for guidance.</li>
+            <li>This result is a screening indicator — not a clinical diagnosis.</li>
+            <li>Early intervention leads to significantly better outcomes.</li>
+        </ul>
+        {% else %}
+        <h2>✅ What this means</h2>
+        <ul>
+            <li>The screening suggests no strong autism indicators at this time.</li>
+            <li>If you still have concerns, consult a medical professional.</li>
+            <li>Continue monitoring behaviour patterns over time.</li>
+            <li>You can retake this screening anytime from your dashboard.</li>
+        </ul>
+        {% endif %}
+    </div>
+
+    <div class="disclaimer-card">
+        ⚠️ This tool is for screening purposes only and does not constitute a medical diagnosis.
+        Always consult a qualified healthcare professional.
+    </div>
+
+    <div class="result-actions">
+        <a href="{{ url_for('screen') }}" class="btn-primary">Screen Again</a>
+        <a href="{{ url_for('dashboard') }}" class="btn-secondary">View Dashboard</a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}About Autism — AutismAI{% endblock %}
+
+{% block content %}
+<div class="info-page">
+
+    <div class="info-hero">
+        <h1>About Autism Spectrum Disorder</h1>
+        <p>Understanding ASD — the facts, signs, and support available.</p>
+    </div>
+
+    <div class="info-grid">
+
+        <div class="info-card">
+            <span class="info-icon">🔬</span>
+            <h2>What is Autism?</h2>
+            <p>Autism Spectrum Disorder (ASD) is a complex neurodevelopmental condition that affects how a person communicates, behaves, and interacts with others. It is called a "spectrum" because symptoms and severity vary widely across individuals.</p>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">📊</span>
+            <h2>How Common is it?</h2>
+            <p>According to the CDC, approximately 1 in 36 children in the United States is diagnosed with ASD. It occurs in all racial, ethnic, and socioeconomic groups. It is about 4 times more common in boys than in girls.</p>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">⚠️</span>
+            <h2>Early Signs</h2>
+            <ul class="info-list">
+                <li>Delayed speech or language skills</li>
+                <li>Avoiding eye contact</li>
+                <li>Difficulty understanding others feelings</li>
+                <li>Repeating words or phrases (echolalia)</li>
+                <li>Intense interest in specific topics</li>
+                <li>Sensitivity to sensory input (light, sound, texture)</li>
+            </ul>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">🧬</span>
+            <h2>Causes</h2>
+            <p>The exact cause of ASD is not fully understood. Research suggests it involves a combination of genetic and environmental factors. It is not caused by vaccines — this has been thoroughly studied and disproven.</p>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">💊</span>
+            <h2>Treatment & Support</h2>
+            <p>There is no single cure for autism, but many therapies help individuals lead fulfilling lives. These include Applied Behaviour Analysis (ABA), speech therapy, occupational therapy, and social skills training. Early intervention is key.</p>
+        </div>
+
+        <div class="info-card">
+            <span class="info-icon">❤️</span>
+            <h2>Living with Autism</h2>
+            <p>Many autistic individuals lead independent, successful, and meaningful lives. With the right support, people on the spectrum excel in fields like science, art, music, and technology. Autism is a difference, not a deficiency.</p>
+        </div>
+
+    </div>
+
+    <div class="cta-section">
+        <h2>Ready to take the screening?</h2>
+        <p>The AQ-10 is a clinically validated tool used worldwide for autism screening.</p>
+        <a href="{{ url_for('signup') }}" class="btn-primary">Take the AQ-10 Test</a>
+    </div>
+
+</div>
+{% endblock %}

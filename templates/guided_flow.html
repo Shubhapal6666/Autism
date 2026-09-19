@@ -1,0 +1,448 @@
+{% extends 'base.html' %}
+{% block title %}Guided Screening — AutismAI{% endblock %}
+
+{% block content %}
+<div class="screen-page">
+
+    <!-- Step Progress Bar -->
+    <div class="step-progress">
+        <div class="step-item {% if step >= 1 %}{% if step > 1 %}completed{% else %}active{% endif %}{% endif %}">
+            <div class="step-circle">
+                {% if step > 1 %}✓{% else %}1{% endif %}
+            </div>
+            <span class="step-label">AQ-10 Screening</span>
+        </div>
+
+        <div class="step-line {% if step > 1 %}completed{% endif %}"></div>
+
+        <div class="step-item {% if step >= 2 %}{% if step > 2 %}completed{% else %}active{% endif %}{% endif %}">
+            <div class="step-circle">
+                {% if step > 2 %}✓{% else %}2{% endif %}
+            </div>
+            <span class="step-label">Face Analysis</span>
+        </div>
+
+        <div class="step-line {% if step > 2 %}completed{% endif %}"></div>
+
+        <div class="step-item {% if step >= 3 %}active{% endif %}">
+            <div class="step-circle">3</div>
+            <span class="step-label">Combined Result</span>
+        </div>
+    </div>
+
+    <!-- Guided banner -->
+    <div class="guided-banner">
+        <div class="guide-icon">🤖</div>
+        <div>
+            <h3>Guided Autism Screening — Step {{ step }} of 3</h3>
+            <p>
+                {% if step == 1 %}
+                    Complete the AQ-10 questionnaire below.
+                    After submitting, Face Analysis will start automatically.
+                {% elif step == 2 %}
+                    AQ-10 completed! Now starting Face Analysis.
+                    The webcam will open automatically.
+                {% else %}
+                    Both steps complete! Calculating your combined result...
+                {% endif %}
+            </p>
+        </div>
+    </div>
+
+    <!-- ==================== STEP 1: AQ-10 ==================== -->
+    {% if step == 1 %}
+
+    <div class="screen-header">
+        <h1>📝 Step 1 — AQ-10 Screening</h1>
+        <p>Answer all 10 behavioural questions honestly. This takes about 2 minutes.</p>
+    </div>
+
+    <form action="/guided-flow/submit-aq10" method="POST" class="screen-form">
+
+        <div class="form-card">
+            <h2>📋 Behavioural Questions</h2>
+            <p class="form-hint">
+                Select 1 if the statement applies to you, 0 if it does not.
+            </p>
+
+            {% set questions = [
+                (1, "I often notice small sounds when others do not."),
+                (2, "I usually concentrate more on the whole picture rather than small details."),
+                (3, "I find it easy to do more than one thing at once."),
+                (4, "If there is an interruption, I can switch back to what I was doing very quickly."),
+                (5, "I find it easy to read between the lines when someone is talking to me."),
+                (6, "I know how to tell if someone listening to me is getting bored."),
+                (7, "When I am reading a story, I find it difficult to work out the characters intentions."),
+                (8, "I like to collect information about categories of things."),
+                (9, "I find it easy to work out what someone is thinking just by looking at their face."),
+                (10, "I find it difficult to work out peoples intentions.")
+            ] %}
+
+            {% for num, question in questions %}
+            <div class="question-row">
+                <span class="q-num">Q{{ num }}</span>
+                <span class="q-text">{{ question }}</span>
+                <div class="q-toggle">
+                    <label class="toggle-option">
+                        <input type="radio" name="A{{ num }}_Score"
+                               value="0" checked> No (0)
+                    </label>
+                    <label class="toggle-option">
+                        <input type="radio" name="A{{ num }}_Score"
+                               value="1"> Yes (1)
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-card">
+            <h2>👤 Personal Information</h2>
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age"
+                           min="1" max="100"
+                           placeholder="Your age" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="0">Female</option>
+                        <option value="1">Male</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ethnicity</label>
+                    <select name="ethnicity">
+                        <option value="0">Asian</option>
+                        <option value="1">Black</option>
+                        <option value="2">Hispanic</option>
+                        <option value="3">Latino</option>
+                        <option value="4">Middle Eastern</option>
+                        <option value="5">Others</option>
+                        <option value="6">Pasifika</option>
+                        <option value="7">South Asian</option>
+                        <option value="8">Turkish</option>
+                        <option value="9">White European</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Born with Jaundice?</label>
+                    <select name="jundice">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Family member with Autism?</label>
+                    <select name="austim">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Country of Residence</label>
+                    <select name="contry_of_res">
+                        <option value="0">Afghanistan</option>
+                        <option value="1">Australia</option>
+                        <option value="2">India</option>
+                        <option value="3">United Kingdom</option>
+                        <option value="4">United States</option>
+                        <option value="5">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Used Screening App Before?</label>
+                    <select name="used_app_before">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Who is filling this form?</label>
+                    <select name="relation">
+                        <option value="0">Self</option>
+                        <option value="1">Parent</option>
+                        <option value="2">Relative</option>
+                        <option value="3">Health Care Professional</option>
+                        <option value="4">Others</option>
+                    </select>
+                </div>
+
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary full-width large-btn">
+            ✅ Submit AQ-10 — Proceed to Face Analysis →
+        </button>
+
+    </form>
+
+    <!-- ==================== STEP 2: FACE ANALYSIS ==================== -->
+    {% elif step == 2 %}
+
+    <div class="screen-header">
+        <h1>🎥 Step 2 — Face Analysis</h1>
+        <p>
+            AQ-10 complete! Now we analyze your facial behaviour.
+            The webcam will open automatically below.
+        </p>
+    </div>
+
+    <div class="form-card" style="text-align: center;">
+        <h2>✅ AQ-10 Result Saved</h2>
+
+        <div style="display: inline-block; padding: 12px 24px;
+                    background: {% if aq10_result == 'Autism Detected' %}
+                    rgba(239,68,68,0.1){% else %}rgba(16,185,129,0.1){% endif %};
+                    border: 1px solid {% if aq10_result == 'Autism Detected' %}
+                    rgba(239,68,68,0.3){% else %}rgba(16,185,129,0.3){% endif %};
+                    border-radius: 10px; margin: 12px 0;">
+            <strong style="color: {% if aq10_result == 'Autism Detected' %}
+                           #fca5a5{% else %}#6ee7b7{% endif %};">
+                {{ aq10_result }} — {{ aq10_confidence }}% confidence
+            </strong>
+        </div>
+
+        <!-- ============================================================
+             FIXED SCORE RANGE BOX
+             Interpretation depends on whether result is positive or negative
+        ============================================================ -->
+        <div class="score-range-box" style="text-align: left; margin-top: 20px;">
+
+            <h3>📊 What does {{ aq10_confidence }}% confidence mean?</h3>
+
+            {% if aq10_result == 'No Autism Detected' %}
+            <!-- NO AUTISM DETECTED — higher confidence = MORE SAFE -->
+            <p style="background: rgba(16,185,129,0.1);
+                      border: 1px solid rgba(16,185,129,0.3);
+                      border-radius: 8px; padding: 10px 14px;
+                      color: #6ee7b7; font-size: 13px;
+                      margin-bottom: 16px;">
+                ✅ Since the result is <strong>No Autism Detected</strong>,
+                higher confidence means the model is MORE sure autism
+                is NOT present — so higher confidence = lower risk = safer.
+            </p>
+            <div class="score-ranges">
+                <div class="score-range-item safe
+                    {% if aq10_confidence >= 70 %}active-range{% endif %}">
+                    <span class="range-label">✅ Very Safe</span>
+                    <span class="range-value">70–100%</span>
+                    <span class="range-desc">
+                        Model is highly confident autism is NOT present.
+                        Very low risk. Routine monitoring recommended.
+                        {% if aq10_confidence >= 70 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item moderate
+                    {% if aq10_confidence >= 50 and aq10_confidence < 70 %}active-range{% endif %}">
+                    <span class="range-label">⚠️ Reasonably Safe</span>
+                    <span class="range-value">50–69%</span>
+                    <span class="range-desc">
+                        Reasonably confident no autism is present.
+                        Monitor behavioral patterns over time.
+                        {% if aq10_confidence >= 50 and aq10_confidence < 70 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item extreme
+                    {% if aq10_confidence < 50 %}active-range{% endif %}">
+                    <span class="range-label">⚠️ Low Confidence</span>
+                    <span class="range-value">0–49%</span>
+                    <span class="range-desc">
+                        Model is uncertain about this result.
+                        Further assessment is recommended.
+                        {% if aq10_confidence < 50 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- AUTISM DETECTED — higher confidence = MORE RISK -->
+            <p style="background: rgba(239,68,68,0.1);
+                      border: 1px solid rgba(239,68,68,0.3);
+                      border-radius: 8px; padding: 10px 14px;
+                      color: #fca5a5; font-size: 13px;
+                      margin-bottom: 16px;">
+                ⚠️ Since the result is <strong>Autism Detected</strong>,
+                higher confidence means the model is MORE sure autism
+                indicators ARE present — so higher confidence = higher risk.
+            </p>
+            <div class="score-ranges">
+                <div class="score-range-item safe
+                    {% if aq10_confidence < 50 %}active-range{% endif %}">
+                    <span class="range-label">⚠️ Weak Indicators</span>
+                    <span class="range-value">0–49%</span>
+                    <span class="range-desc">
+                        Mild autism indicators. Model is not very confident.
+                        Further assessment recommended.
+                        {% if aq10_confidence < 50 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item moderate
+                    {% if aq10_confidence >= 50 and aq10_confidence < 70 %}active-range{% endif %}">
+                    <span class="range-label">⚠️ Moderate Risk</span>
+                    <span class="range-value">50–69%</span>
+                    <span class="range-desc">
+                        Moderate autism indicators detected.
+                        Professional assessment advised.
+                        {% if aq10_confidence >= 50 and aq10_confidence < 70 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item extreme
+                    {% if aq10_confidence >= 70 %}active-range{% endif %}">
+                    <span class="range-label">🚨 High Risk</span>
+                    <span class="range-value">70–100%</span>
+                    <span class="range-desc">
+                        Strong autism indicators. Model is highly confident.
+                        Immediate professional consultation advised.
+                        {% if aq10_confidence >= 70 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <div class="form-card">
+        <h2>🎥 Face Analysis — Select Duration</h2>
+        <p class="form-hint">
+            Choose how long the webcam should analyze your behaviour.
+        </p>
+        <div class="duration-grid">
+            <label class="duration-option">
+                <input type="radio" name="duration" value="15">
+                ⚡ 15 seconds
+            </label>
+            <label class="duration-option">
+                <input type="radio" name="duration" value="30" checked>
+                ✅ 30 seconds (Recommended)
+            </label>
+            <label class="duration-option">
+                <input type="radio" name="duration" value="60">
+                🎯 60 seconds
+            </label>
+        </div>
+
+        <button id="start-face-btn"
+                onclick="startFaceAnalysis()"
+                class="btn-primary large-btn">
+            🎥 Start Face Analysis → Auto Proceed to Results
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div id="face-loading" class="form-card"
+         style="display:none; text-align:center; padding:48px;">
+        <div class="loading-spinner"></div>
+        <h2 id="face-loading-text">Opening webcam...</h2>
+        <p class="form-hint" style="margin-top:12px;">
+            Look naturally at the camera.<br>
+            Results will be calculated automatically when done.
+        </p>
+        <div class="progress-bar-wrap" style="margin-top:24px;">
+            <div class="progress-bar-fill" id="face-progress"></div>
+        </div>
+        <p id="face-progress-text" class="form-hint"
+           style="margin-top:8px;">0% complete</p>
+        <div class="auto-redirect-notice" style="display:none;"
+             id="redirect-notice">
+            ✅ Analysis complete! Redirecting to your combined result...
+        </div>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if step == 2 %}
+<script>
+let duration = 30;
+let progressInterval = null;
+
+function startFaceAnalysis() {
+    const selected = document.querySelector('input[name="duration"]:checked');
+    duration = selected ? parseInt(selected.value) : 30;
+
+    document.getElementById('start-face-btn').style.display = 'none';
+    document.getElementById('face-loading').style.display   = 'block';
+
+    let elapsed = 0;
+    progressInterval = setInterval(() => {
+        elapsed += 1;
+        const pct = Math.min((elapsed / (duration + 8)) * 100, 95);
+        document.getElementById('face-progress').style.width =
+            pct.toFixed(1) + '%';
+        document.getElementById('face-progress-text').textContent =
+            Math.round(pct) + '% complete';
+
+        if (elapsed === 2) {
+            document.getElementById('face-loading-text').textContent =
+                'Webcam open — look naturally at camera...';
+        }
+        if (elapsed === Math.floor(duration * 0.5)) {
+            document.getElementById('face-loading-text').textContent =
+                'Halfway — keep going!';
+        }
+        if (elapsed === duration) {
+            document.getElementById('face-loading-text').textContent =
+                'Almost done — calculating results...';
+        }
+    }, 1000);
+
+    const formData = new FormData();
+    formData.append('duration', duration);
+
+    fetch('/run-tracking', {
+        method: 'POST',
+        body:   formData
+    })
+    .then(r => r.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        document.getElementById('face-progress').style.width      = '100%';
+        document.getElementById('face-progress-text').textContent = '100% complete';
+        document.getElementById('face-loading-text').textContent  = 'Analysis complete!';
+        document.getElementById('redirect-notice').style.display  = 'block';
+
+        if (data.error) {
+            alert('Error: ' + data.error);
+            return;
+        }
+
+        setTimeout(() => {
+            window.location.href = '/guided-flow/combined';
+        }, 2000);
+    })
+    .catch(err => {
+        clearInterval(progressInterval);
+        document.getElementById('face-loading-text').textContent =
+            'Error: ' + err.message;
+    });
+}
+</script>
+{% endif %}
+{% endblock %}

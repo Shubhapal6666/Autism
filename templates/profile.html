@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Profile — AutismAI{% endblock %}
+
+{% block content %}
+<div class="auth-page" style="align-items: flex-start; padding-top: 48px;">
+    <div class="auth-card" style="max-width: 540px;">
+
+        <div class="auth-header">
+            <div class="auth-logo">👤</div>
+            <h2>My Profile</h2>
+            <p>Update your account details</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="alert alert-success">✅ {{ success }}</div>
+        {% endif %}
+
+        <form action="/profile" method="POST" class="auth-form">
+
+            <div class="form-group">
+                <label>👤 Full Name</label>
+                <input type="text" name="name"
+                       value="{{ user['name'] }}"
+                       required class="plain-input">
+            </div>
+
+            <div class="form-group">
+                <label>📧 Email Address</label>
+                <input type="email"
+                       value="{{ user['email'] }}"
+                       disabled class="plain-input"
+                       style="opacity: 0.5; cursor: not-allowed;">
+                <small style="color: var(--text3); font-size: 12px;">
+                    Email cannot be changed
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label>📅 Member Since</label>
+                <input type="text"
+                       value="{{ user['created_at'] }}"
+                       disabled class="plain-input"
+                       style="opacity: 0.5; cursor: not-allowed;">
+            </div>
+
+            <hr style="border-color: var(--border); margin: 24px 0;">
+            <p style="font-size: 13px; color: var(--text2); margin-bottom: 16px;">
+                Leave password fields blank to keep your current password.
+            </p>
+
+            <div class="form-group">
+                <label>🔒 New Password</label>
+                <input type="password" name="new_password"
+                       placeholder="Leave blank to keep current"
+                       class="plain-input">
+            </div>
+
+            <div class="form-group">
+                <label>🔒 Confirm New Password</label>
+                <input type="password" name="confirm_password"
+                       placeholder="Repeat new password"
+                       class="plain-input">
+            </div>
+
+            <button type="submit" class="btn-primary full-width">
+                💾 Save Changes
+            </button>
+
+        </form>
+
+        <div style="margin-top: 24px; display: flex;
+                    gap: 12px; flex-wrap: wrap;">
+            <a href="/dashboard" class="btn-secondary"
+               style="flex: 1; text-align: center;">
+                📊 Dashboard
+            </a>
+            <a href="/combined-result" class="btn-secondary"
+               style="flex: 1; text-align: center;">
+                🧠 Combined Result
+            </a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

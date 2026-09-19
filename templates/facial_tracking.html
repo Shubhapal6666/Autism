@@ -1,0 +1,381 @@
+{% extends 'base.html' %}
+{% block title %}Facial Analysis — AutismAI{% endblock %}
+
+{% block content %}
+<div class="screen-page">
+
+    <div class="screen-header">
+        <h1>🎥 Facial Behaviour Analysis</h1>
+        <p>Real-time webcam analysis of behavioral indicators associated with autism screening.</p>
+    </div>
+
+    <!-- What we measure -->
+    <div class="form-card">
+        <h2>📊 What We Analyze</h2>
+        <div class="tracking-grid">
+            <div class="tracking-item">
+                <span class="tracking-icon">👁️</span>
+                <h3>Eye Contact</h3>
+                <p>Measures how consistently you maintain gaze toward the screen. Reduced eye contact is a key ASD indicator.</p>
+            </div>
+            <div class="tracking-item">
+                <span class="tracking-icon">😑</span>
+                <h3>Blink Rate</h3>
+                <p>Counts blinks per minute. Normal range is 12–22 blinks/min. Atypical rates may indicate ASD.</p>
+            </div>
+            <div class="tracking-item">
+                <span class="tracking-icon">🔄</span>
+                <h3>Head Movement</h3>
+                <p>Tracks head stability. Repetitive or excessive head movement is a behavioral ASD indicator.</p>
+            </div>
+            <div class="tracking-item">
+                <span class="tracking-icon">😊</span>
+                <h3>Expression</h3>
+                <p>Measures facial expressiveness via eye variability. Flat affect is a common ASD feature.</p>
+            </div>
+            <div class="tracking-item">
+                <span class="tracking-icon">👤</span>
+                <h3>Face Presence</h3>
+                <p>Tracks how long the face remains visible and engaged during the session.</p>
+            </div>
+            <div class="tracking-item">
+                <span class="tracking-icon">🤖</span>
+                <h3>Combined Score</h3>
+                <p>Weighted combination of all 5 indicators into one behavioral risk score.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Instructions -->
+    <div class="form-card">
+        <h2>📋 Before You Start</h2>
+        <ul class="instruction-list">
+            <li>✅ Sit in a well-lit room facing your webcam directly</li>
+            <li>✅ Keep your face centered and fully visible throughout</li>
+            <li>✅ Behave completely naturally — do not force expressions</li>
+            <li>✅ A webcam window will open with your face mesh overlay</li>
+            <li>✅ The window closes automatically when analysis is complete</li>
+            <li>⚠️ Press Q on the webcam window only if you need to stop early</li>
+            <li>⚠️ Do not close the browser tab while analysis is running</li>
+        </ul>
+    </div>
+
+    <!-- Duration + Start -->
+    <div class="form-card" id="start-section">
+        <h2>⏱️ Select Analysis Duration</h2>
+        <p class="form-hint">Longer duration gives more reliable and accurate results.</p>
+
+        <div class="duration-grid">
+            <label class="duration-option">
+                <input type="radio" name="duration" value="15">
+                ⚡ 15 seconds — Quick test
+            </label>
+            <label class="duration-option">
+                <input type="radio" name="duration" value="30" checked>
+                ✅ 30 seconds — Recommended
+            </label>
+            <label class="duration-option">
+                <input type="radio" name="duration" value="60">
+                🎯 60 seconds — Most accurate
+            </label>
+        </div>
+
+        <button id="start-btn" onclick="startTracking()"
+                class="btn-primary large-btn">
+            🎥 Start Facial Analysis
+        </button>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading-section" class="form-card"
+         style="display:none; text-align:center; padding: 48px 32px;">
+        <div class="loading-spinner"></div>
+        <h2 id="loading-text">Opening webcam...</h2>
+        <p class="form-hint" style="margin-top: 12px;">
+            A new window will open with your webcam feed.<br>
+            Look naturally at the camera and stay still.<br>
+            Results will appear here automatically when done.
+        </p>
+        <div class="progress-bar-wrap" style="margin-top: 24px;">
+            <div class="progress-bar-fill" id="progress-bar"></div>
+        </div>
+        <p id="progress-text" class="form-hint"
+           style="margin-top: 8px;">0% complete</p>
+    </div>
+
+    <!-- Results -->
+    <div id="results-section" style="display:none;">
+
+        <!-- Main score -->
+        <div class="form-card" style="text-align: center;">
+            <h2 style="margin-bottom: 24px;">🧠 Behavioral Risk Assessment</h2>
+            <div class="result-score-box" id="score-box">
+                <h1 id="behavioral-score">--</h1>
+                <p id="behavioral-risk">Analyzing...</p>
+            </div>
+            <p style="color: var(--text2); font-size: 14px; margin-top: 12px;">
+                Score out of 100 — Higher score means more typical behavior
+                (lower autism risk)
+            </p>
+        </div>
+
+        <!-- Individual metrics -->
+        <div class="form-card">
+            <h2>📈 Individual Metrics</h2>
+            <div class="metrics-grid" style="margin-top: 20px;">
+                <div class="metric-card">
+                    <span class="metric-icon">👁️</span>
+                    <h3 id="eye-score">--</h3>
+                    <p>Eye Contact Score</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">😑</span>
+                    <h3 id="blink-rate">--</h3>
+                    <p>Blinks Per Minute</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">✅</span>
+                    <h3 id="blink-score">--</h3>
+                    <p>Blink Rate Score</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🔄</span>
+                    <h3 id="head-score">--</h3>
+                    <p>Head Stability Score</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">👤</span>
+                    <h3 id="face-presence">--</h3>
+                    <p>Face Presence %</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">😊</span>
+                    <h3 id="expression-score">--</h3>
+                    <p>Expression Score</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">🎞️</span>
+                    <h3 id="total-frames">--</h3>
+                    <p>Total Frames</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">😀</span>
+                    <h3 id="face-frames">--</h3>
+                    <p>Frames With Face</p>
+                </div>
+                <div class="metric-card">
+                    <span class="metric-icon">⏱️</span>
+                    <h3 id="duration">--</h3>
+                    <p>Duration (seconds)</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Advice -->
+        <div class="form-card">
+            <h2>💡 What This Means</h2>
+            <p id="advice-text"
+               style="color: var(--text2); line-height: 1.9;
+                      font-size: 15px; margin-bottom: 20px;"></p>
+            <div class="disclaimer-card">
+                ⚠️ Facial behaviour analysis is a supplementary screening tool only.
+                Results must always be combined with the AQ-10 questionnaire
+                and a professional clinical assessment for any meaningful conclusion.
+            </div>
+        </div>
+
+        <!-- Score explanation -->
+        <div class="form-card">
+            <h2>📊 Score Breakdown Explanation</h2>
+            <div class="score-explain-grid">
+                <div class="score-explain-item">
+                    <span style="color: var(--success); font-weight: 700;">
+                        70–100 — Low Risk
+                    </span>
+                    <p>Eye contact, blink rate, and head movement are
+                       all within typical ranges.</p>
+                </div>
+                <div class="score-explain-item">
+                    <span style="color: var(--warning); font-weight: 700;">
+                        45–69 — Moderate Risk
+                    </span>
+                    <p>Some indicators are slightly outside typical ranges.
+                       May be due to lighting, anxiety, or camera angle.</p>
+                </div>
+                <div class="score-explain-item">
+                    <span style="color: var(--danger); font-weight: 700;">
+                        0–44 — High Risk
+                    </span>
+                    <p>Multiple indicators show atypical patterns.
+                       Recommend completing AQ-10 and consulting a professional.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="result-actions">
+            <a href="/screen" class="btn-primary">
+                📝 Take AQ-10 Screening
+            </a>
+            <a href="/dashboard" class="btn-secondary">
+                📊 View Dashboard
+            </a>
+            <button onclick="resetTracking()" class="btn-secondary">
+                🔄 Run Again
+            </button>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let trackingDuration = 30;
+let progressInterval  = null;
+
+function startTracking() {
+    const selected   = document.querySelector('input[name="duration"]:checked');
+    trackingDuration = selected ? parseInt(selected.value) : 30;
+
+    document.getElementById('start-section').style.display  = 'none';
+    document.getElementById('loading-section').style.display = 'block';
+    document.getElementById('results-section').style.display = 'none';
+
+    // Animate progress bar
+    let elapsed = 0;
+    progressInterval = setInterval(() => {
+        elapsed += 1;
+        const pct = Math.min((elapsed / (trackingDuration + 8)) * 100, 95);
+        document.getElementById('progress-bar').style.width =
+            pct.toFixed(1) + '%';
+        document.getElementById('progress-text').textContent =
+            Math.round(pct) + '% complete';
+
+        if (elapsed === 2) {
+            document.getElementById('loading-text').textContent =
+                'Webcam is open — look naturally at the camera...';
+        }
+        if (elapsed === Math.floor(trackingDuration * 0.5)) {
+            document.getElementById('loading-text').textContent =
+                'Halfway there — keep going!';
+        }
+        if (elapsed === trackingDuration) {
+            document.getElementById('loading-text').textContent =
+                'Almost done — calculating your results...';
+        }
+    }, 1000);
+
+    // Call Flask route to start tracking
+    const formData = new FormData();
+    formData.append('duration', trackingDuration);
+
+    fetch('/run-tracking', {
+        method: 'POST',
+        body:   formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        clearInterval(progressInterval);
+        document.getElementById('progress-bar').style.width   = '100%';
+        document.getElementById('progress-text').textContent  = '100% complete';
+        document.getElementById('loading-text').textContent   = 'Analysis complete!';
+
+        setTimeout(() => {
+            document.getElementById('loading-section').style.display = 'none';
+            showResults(data);
+        }, 600);
+    })
+    .catch(error => {
+        clearInterval(progressInterval);
+        document.getElementById('loading-text').textContent =
+            'Error: ' + error.message + ' — Please refresh and try again.';
+    });
+}
+
+function showResults(data) {
+    if (data.error) {
+        alert('Error: ' + data.error);
+        resetTracking();
+        return;
+    }
+
+    document.getElementById('results-section').style.display = 'block';
+
+    // Main score
+    document.getElementById('behavioral-score').textContent =
+        data.behavioral_score + '%';
+    document.getElementById('behavioral-risk').textContent =
+        data.behavioral_risk;
+
+    // Color the score box
+    const box = document.getElementById('score-box');
+    box.className = 'result-score-box';
+    if (data.risk_color === 'green')  box.classList.add('score-green');
+    if (data.risk_color === 'orange') box.classList.add('score-orange');
+    if (data.risk_color === 'red')    box.classList.add('score-red');
+
+    // Individual metrics
+    document.getElementById('eye-score').textContent =
+        data.eye_contact.toFixed(1) + '%';
+    document.getElementById('blink-rate').textContent =
+        data.blink_rate.toFixed(1);
+    document.getElementById('blink-score').textContent =
+        data.blink_score.toFixed(1) + '%';
+    document.getElementById('head-score').textContent =
+        data.head_movement.toFixed(1) + '%';
+    document.getElementById('face-presence').textContent =
+        data.face_presence.toFixed(1) + '%';
+    document.getElementById('expression-score').textContent =
+        data.expression_score.toFixed(1);
+    document.getElementById('total-frames').textContent =
+        data.total_frames;
+    document.getElementById('face-frames').textContent =
+        data.frames_with_face;
+    document.getElementById('duration').textContent =
+        data.duration_seconds + 's';
+
+    // Advice
+    const advice = document.getElementById('advice-text');
+    if (data.risk_color === 'green') {
+        advice.textContent =
+            'Your behavioral patterns appear within typical ranges. ' +
+            'Eye contact, blink rate, head stability, and facial expression ' +
+            'all showed normal variation during this session. ' +
+            'We recommend also completing the AQ-10 questionnaire for ' +
+            'a complete and well-rounded screening result.';
+    } else if (data.risk_color === 'orange') {
+        advice.textContent =
+            'Some behavioral indicators are slightly outside typical ranges. ' +
+            'This could be due to environmental factors such as lighting ' +
+            'conditions, camera angle, nervousness, or natural variation. ' +
+            'We recommend completing the AQ-10 questionnaire and considering ' +
+            'a consultation with a healthcare professional if you have concerns.';
+    } else {
+        advice.textContent =
+            'Several behavioral indicators show patterns that may warrant ' +
+            'further investigation. Reduced eye contact, atypical blink rate, ' +
+            'or unusual head movement patterns were detected during this session. ' +
+            'We strongly recommend completing the AQ-10 questionnaire and ' +
+            'consulting a qualified healthcare professional for a proper ' +
+            'clinical assessment. Remember this is a screening tool only.';
+    }
+
+    // Scroll to results smoothly
+    document.getElementById('results-section').scrollIntoView({
+        behavior: 'smooth', block: 'start'
+    });
+}
+
+function resetTracking() {
+    clearInterval(progressInterval);
+    document.getElementById('start-section').style.display   = 'block';
+    document.getElementById('loading-section').style.display = 'none';
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('progress-bar').style.width      = '0%';
+    document.getElementById('progress-text').textContent     = '0% complete';
+    document.getElementById('loading-text').textContent      = 'Opening webcam...';
+}
+</script>
+{% endblock %}

@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% block title %}Admin Panel — AutismAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+    <div class="dash-header">
+        <div>
+            <h1>🔧 Admin Panel</h1>
+            <p>Manage users and view all screening data.</p>
+        </div>
+        <a href="/dashboard" class="btn-secondary">← Back to Dashboard</a>
+    </div>
+
+    <!-- Admin Stats -->
+    <div class="dash-stats">
+        <div class="dash-stat-card">
+            <h3>{{ stats.total_users }}</h3>
+            <p>Total Users</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.total_predictions }}</h3>
+            <p>Total Screenings</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.total_facial }}</h3>
+            <p>Face Analyses</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.total_positive }}</h3>
+            <p>Positive Results</p>
+        </div>
+    </div>
+
+    <!-- Users Table -->
+    <h2 style="margin-bottom: 16px;">👥 All Users</h2>
+    <div class="history-table-wrap" style="margin-bottom: 32px;">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Joined</th>
+                    <th>Verified</th>
+                    <th>Admin</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in all_users %}
+                <tr>
+                    <td>{{ user['id'] }}</td>
+                    <td>{{ user['name'] }}</td>
+                    <td>{{ user['email'] }}</td>
+                    <td>{{ user['created_at'] }}</td>
+                    <td>
+                        {% if user['is_verified'] %}
+                        <span class="badge badge-green">✅ Yes</span>
+                        {% else %}
+                        <span class="badge badge-red">❌ No</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user['is_admin'] %}
+                        <span class="badge badge-green">Admin</span>
+                        {% else %}
+                        <span class="badge" style="background:var(--bg3);
+                               color:var(--text2);">User</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if not user['is_admin'] %}
+                        <form action="/admin/make-admin/{{ user['id'] }}"
+                              method="POST"
+                              onsubmit="return confirm('Make {{ user['name'] }} an admin?')">
+                            <button type="submit" class="btn-delete"
+                                    style="background:rgba(124,58,237,0.1);
+                                           border-color:rgba(124,58,237,0.3);
+                                           color:#a78bfa;">
+                                Make Admin
+                            </button>
+                        </form>
+                        {% else %}
+                        <span style="color:var(--text3);font-size:13px;">
+                            — Admin
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- All Predictions -->
+    <h2 style="margin-bottom: 16px;">📋 All Screening Records</h2>
+    <div class="history-table-wrap">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Date</th>
+                    <th>Age</th>
+                    <th>Result</th>
+                    <th>Confidence</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in all_predictions %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ p['name'] }}</td>
+                    <td style="font-size:12px;">{{ p['email'] }}</td>
+                    <td style="font-size:12px;">{{ p['date'] }}</td>
+                    <td>{{ p['age'] }}</td>
+                    <td>
+                        <span class="badge
+                            {% if p['result'] == 'Autism Detected' %}
+                                badge-red
+                            {% else %}
+                                badge-green
+                            {% endif %}">
+                            {{ p['result'] }}
+                        </span>
+                    </td>
+                    <td>{{ p['confidence'] }}%</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+<!-- python -c "
+import sqlite3
+conn = sqlite3.connect('autism.db')
+conn.execute('UPDATE users SET is_admin = 1 WHERE email = \"avikdasiitkharagpur@gmail.com\"')
+conn.commit()
+conn.close()
+print('Done! You are now admin.')
+" -->

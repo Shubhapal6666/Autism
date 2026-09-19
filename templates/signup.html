@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up — AutismAI{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-header">
+            <div class="auth-logo">🧠</div>
+            <h2>Create Account</h2>
+            <p>Join AutismAI — free forever</p>
+        </div>
+
+        {% if error %}
+        <div class="alert alert-error">⚠️ {{ error }}</div>
+        {% endif %}
+
+        {% if success %}
+        <!-- Show this big clear message when signup is done -->
+        <div style="text-align: center; padding: 16px 0;">
+            <div style="font-size: 56px; margin-bottom: 16px;">📧</div>
+            <h3 style="color: var(--success); margin-bottom: 12px;">
+                Account Created!
+            </h3>
+            <div class="alert alert-success"
+                 style="text-align: left; margin-bottom: 20px;">
+                ✅ {{ success }}
+            </div>
+            <div style="background: var(--bg3);
+                        border: 1px solid var(--border);
+                        border-radius: 12px;
+                        padding: 20px;
+                        text-align: left;
+                        margin-bottom: 20px;">
+                <h4 style="margin-bottom: 12px; color: var(--primary-light);">
+                    📋 Next Steps:
+                </h4>
+                <ol style="color: var(--text2);
+                           font-size: 14px;
+                           line-height: 2;
+                           padding-left: 20px;">
+                    <li>Open your email inbox</li>
+                    <li>Look for an email from <strong>AutismAI</strong></li>
+                    <li>Click the <strong>Verify My Email</strong> button</li>
+                    <li>Come back here and login</li>
+                </ol>
+            </div>
+            <p style="color: var(--text3); font-size: 13px;
+                      margin-bottom: 20px;">
+                ⚠️ Check your spam folder if you don't see the email
+                within 2 minutes.
+            </p>
+            <a href="/login" class="btn-primary full-width">
+                Go to Login →
+            </a>
+        </div>
+
+        {% else %}
+
+        <form action="/signup" method="POST" class="auth-form">
+            <div class="form-group">
+                <label>👤 Full Name</label>
+                <input type="text" name="name"
+                       placeholder="Your full name"
+                       required class="plain-input">
+            </div>
+            <div class="form-group">
+                <label>📧 Email Address</label>
+                <input type="email" name="email"
+                       placeholder="you@example.com"
+                       required class="plain-input">
+            </div>
+            <div class="form-group">
+                <label>🔒 Password</label>
+                <input type="password" name="password"
+                       placeholder="At least 6 characters"
+                       required class="plain-input">
+            </div>
+            <button type="submit" class="btn-primary full-width">
+                Create Account
+            </button>
+        </form>
+
+        <p class="auth-switch">
+            Already have an account?
+            <a href="/login">Sign in</a>
+        </p>
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% block title %}AutismAI — Home{% endblock %}
+
+{% block content %}
+
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badge">🤖 AI-Powered Screening</div>
+        <h1>Early Autism Detection<br><span class="gradient-text">Powered by Machine Learning</span></h1>
+        <p>AutismAI uses a Random Forest model trained on real screening data to help identify autism spectrum disorder early — accurately and responsibly.</p>
+
+        <div class="hero-buttons">
+            {% if session.get('user_id') %}
+                <a href="/screen" class="btn-primary">Start Screening</a>
+                <a href="/dashboard" class="btn-secondary">My Dashboard</a>
+            {% else %}
+                <a href="/signup" class="btn-primary">Get Started Free</a>
+                <a href="/about" class="btn-secondary">Learn More</a>
+            {% endif %}
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat">
+                <h3>95.6%</h3>
+                <p>CV Accuracy</p>
+            </div>
+            <div class="stat">
+                <h3>704</h3>
+                <p>Training Records</p>
+            </div>
+            <div class="stat">
+                <h3>100%</h3>
+                <p>Autism Recall</p>
+            </div>
+            <div class="stat">
+                <h3>18</h3>
+                <p>Features Analyzed</p>
+            </div>
+        </div>
+    </div>
+    <div class="hero-image">
+        <div class="brain-card">
+            <div class="brain-icon">🧠</div>
+            <div class="brain-text">
+                <p>Random Forest Model</p>
+                <p class="brain-sub">100 Decision Trees</p>
+            </div>
+            <div class="accuracy-ring">
+                <span>95.6%</span>
+                <small>Accurate</small>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="section">
+    <div class="section-container">
+        <h2 class="section-title">How It Works</h2>
+        <p class="section-sub">Three simple steps to get a screening result</p>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-icon">📝</div>
+                <h3>Fill the Form</h3>
+                <p>Answer 10 behavioural questions from the AQ-10 clinical screening test along with basic personal details.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-icon">🤖</div>
+                <h3>AI Analyzes</h3>
+                <p>Our Random Forest model analyzes your inputs across 18 features and computes a probability score.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-icon">📊</div>
+                <h3>Get Result</h3>
+                <p>Receive a detailed result with confidence percentage, probability breakdown, and next step guidance.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section alt-section">
+    <div class="section-container">
+        <h2 class="section-title">Why AutismAI?</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h3>Instant Results</h3>
+                <p>Get your screening result in seconds, not days.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🔒</span>
+                <h3>Private & Secure</h3>
+                <p>Your data stays in your session only. Nothing is stored externally.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📈</span>
+                <h3>Track History</h3>
+                <p>View all past screening results in your personal dashboard.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🌙</span>
+                <h3>Dark & Light Mode</h3>
+                <p>Comfortable viewing in any environment with theme toggle.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h3>High Accuracy</h3>
+                <p>95.6% cross-validated accuracy with 100% autism recall rate.</p>
+            </div>
+            <div class="feature-card">
+                <span class="feature-icon">📚</span>
+                <h3>Learn About Autism</h3>
+                <p>Dedicated pages covering autism facts, history, and resources.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    {% if session.get('user_id') %}
+        <h2>Welcome back, {{ session['name'] }}! 👋</h2>
+        <p>Continue your autism screening journey or view your past results.</p>
+        <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+            <a href="/screen" class="btn-primary" style="background:white; color:#7c3aed;">Start New Screening</a>
+            <a href="/facial-tracking" class="btn-primary" style="background:rgba(255,255,255,0.2); border: 2px solid white;">🎥 Face Analysis</a>
+        </div>
+    {% else %}
+        <h2>Ready to get screened?</h2>
+        <p>Create a free account and take the AQ-10 screening test in under 3 minutes.</p>
+        <a href="/signup" class="btn-primary" style="background:white; color:#7c3aed;">Create Free Account</a>
+    {% endif %}
+</section>
+
+{% endblock %}

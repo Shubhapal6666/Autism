@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Email Verification — AutismAI{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card" style="text-align: center;">
+
+        {% if status == 'success' %}
+            <div style="font-size: 64px; margin-bottom: 16px;">✅</div>
+            <h2 style="color: var(--success); margin-bottom: 12px;">
+                Email Verified!
+            </h2>
+            <p style="color: var(--text2); margin-bottom: 32px;">
+                {{ message }}
+            </p>
+            <a href="/login" class="btn-primary full-width">
+                Login to Your Account
+            </a>
+        {% else %}
+            <div style="font-size: 64px; margin-bottom: 16px;">❌</div>
+            <h2 style="color: var(--danger); margin-bottom: 12px;">
+                Verification Failed
+            </h2>
+            <p style="color: var(--text2); margin-bottom: 32px;">
+                {{ message }}
+            </p>
+            <a href="/signup" class="btn-primary full-width">
+                Sign Up Again
+            </a>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

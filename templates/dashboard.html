@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard — AutismAI{% endblock %}
+
+{% block content %}
+<div class="dashboard-page">
+
+    <div class="dash-header">
+        <div>
+            <h1>Welcome back, {{ name }} 👋</h1>
+            <p>Here are all your past screening results.</p>
+        </div>
+        <a href="/screen" class="btn-primary">+ New Screening</a>
+    </div>
+
+    <!-- Stats from database -->
+    <div class="dash-stats">
+        <div class="dash-stat-card">
+            <h3>{{ stats.total }}</h3>
+            <p>Total Screenings</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.positive }}</h3>
+            <p>Positive Results</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.negative }}</h3>
+            <p>Negative Results</p>
+        </div>
+        <div class="dash-stat-card">
+            <h3>{{ stats.avg_conf }}%</h3>
+            <p>Avg Confidence</p>
+        </div>
+    </div>
+
+    {% if history %}
+    <div class="history-table-wrap">
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Result</th>
+                    <th>Confidence</th>
+                    <th>Autism Prob.</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in history %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ item['date'] }}</td>
+                    <td>{{ item['age'] }}</td>
+                    <td>{{ item['gender'] }}</td>
+                    <td>
+                        <span class="badge {% if item['result'] == 'Autism Detected' %}badge-red{% else %}badge-green{% endif %}">
+                            {{ item['result'] }}
+                        </span>
+                    </td>
+                    <td>{{ item['confidence'] }}%</td>
+                    <td>{{ item['autism_prob'] }}%</td>
+                    <td>
+                        <!-- Delete button sends POST request to /delete/id -->
+                        <form action="/delete/{{ item['id'] }}" method="POST"
+                              onsubmit="return confirm('Delete this record?')">
+                            <button type="submit" class="btn-delete">🗑 Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">📋</div>
+        <h2>No screenings yet</h2>
+        <p>Take your first autism screening to see results here.</p>
+        <a href="/screen" class="btn-primary">Start Screening</a>
+    </div>
+    {% endif %}
+
+</div>
+{% endblock %}

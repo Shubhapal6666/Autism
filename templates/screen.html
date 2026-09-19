@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% block title %}Screening — AutismAI{% endblock %}
+
+{% block content %}
+<div class="screen-page">
+    <div class="screen-header">
+        <h1>🧠 AQ-10 Autism Screening</h1>
+        <p>Answer all questions honestly. This takes about 2 minutes.</p>
+    </div>
+
+    <form action="/predict" method="POST" class="screen-form">
+
+        <div class="form-card">
+            <h2>📋 Behavioural Questions</h2>
+            <p class="form-hint">Select 1 if the statement applies to you, 0 if it does not.</p>
+
+            {% set questions = [
+                (1, "I often notice small sounds when others do not."),
+                (2, "I usually concentrate more on the whole picture rather than small details."),
+                (3, "I find it easy to do more than one thing at once."),
+                (4, "If there is an interruption, I can switch back to what I was doing very quickly."),
+                (5, "I find it easy to read between the lines when someone is talking to me."),
+                (6, "I know how to tell if someone listening to me is getting bored."),
+                (7, "When I am reading a story, I find it difficult to work out the characters intentions."),
+                (8, "I like to collect information about categories of things."),
+                (9, "I find it easy to work out what someone is thinking just by looking at their face."),
+                (10, "I find it difficult to work out peoples intentions.")
+            ] %}
+
+            {% for num, question in questions %}
+            <div class="question-row">
+                <span class="q-num">Q{{ num }}</span>
+                <span class="q-text">{{ question }}</span>
+                <div class="q-toggle">
+                    <label class="toggle-option">
+                        <input type="radio" name="A{{ num }}_Score" value="0" checked> No (0)
+                    </label>
+                    <label class="toggle-option">
+                        <input type="radio" name="A{{ num }}_Score" value="1"> Yes (1)
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-card">
+            <h2>👤 Personal Information</h2>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Age</label>
+                    <input type="number" name="age" min="1" max="100" placeholder="Your age" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Gender</label>
+                    <select name="gender">
+                        <option value="0">Female</option>
+                        <option value="1">Male</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Ethnicity</label>
+                    <select name="ethnicity">
+                        <option value="0">Asian</option>
+                        <option value="1">Black</option>
+                        <option value="2">Hispanic</option>
+                        <option value="3">Latino</option>
+                        <option value="4">Middle Eastern</option>
+                        <option value="5">Others</option>
+                        <option value="6">Pasifika</option>
+                        <option value="7">South Asian</option>
+                        <option value="8">Turkish</option>
+                        <option value="9">White European</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Born with Jaundice?</label>
+                    <select name="jundice">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Family member with Autism?</label>
+                    <select name="austim">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Country of Residence</label>
+                    <select name="contry_of_res">
+                        <option value="0">Afghanistan</option>
+                        <option value="1">Australia</option>
+                        <option value="2">India</option>
+                        <option value="3">United Kingdom</option>
+                        <option value="4">United States</option>
+                        <option value="5">Other</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Used Screening App Before?</label>
+                    <select name="used_app_before">
+                        <option value="0">No</option>
+                        <option value="1">Yes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Who is filling this form?</label>
+                    <select name="relation">
+                        <option value="0">Self</option>
+                        <option value="1">Parent</option>
+                        <option value="2">Relative</option>
+                        <option value="3">Health Care Professional</option>
+                        <option value="4">Others</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary full-width large-btn">
+            🔍 Analyze & Predict
+        </button>
+    </form>
+</div>
+{% endblock %}

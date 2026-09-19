@@ -1,0 +1,364 @@
+{% extends 'base.html' %}
+{% block title %}Combined Result — AutismAI{% endblock %}
+
+{% block content %}
+<div class="result-page" style="max-width: 860px;">
+
+    <div class="screen-header">
+        <h1>🧠 Combined Assessment Result</h1>
+        <p>AQ-10 Questionnaire + Facial Behaviour Analysis</p>
+    </div>
+
+    {% if error %}
+    <!-- ==================== ERROR STATE ==================== -->
+    <div class="form-card" style="text-align: center; padding: 48px;">
+        <div style="font-size: 56px; margin-bottom: 16px;">⚠️</div>
+        <h2 style="margin-bottom: 12px;">Complete Both Steps First</h2>
+        <p style="color: var(--text2); margin-bottom: 28px;">
+            To get a combined result you must complete both screenings.
+            Use the <strong style="color: var(--primary-light);">
+            Guided Flow</strong> for the easiest step-by-step experience.
+        </p>
+
+        <div style="display: grid;
+                    grid-template-columns: repeat(2, 1fr);
+                    gap: 16px; margin-bottom: 32px;
+                    max-width: 480px; margin-left: auto;
+                    margin-right: auto;">
+            {% for item in missing %}
+            <div style="background: rgba(239,68,68,0.1);
+                        border: 1px solid rgba(239,68,68,0.3);
+                        border-radius: 12px; padding: 20px;
+                        color: #fca5a5; text-align: center;">
+                <div style="font-size: 32px; margin-bottom: 8px;">❌</div>
+                <strong>{{ item }}</strong>
+                <p style="font-size: 12px; margin-top: 4px; opacity: 0.8;">
+                    Not completed yet
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="display: flex; gap: 12px;
+                    justify-content: center; flex-wrap: wrap;">
+            <a href="/guided-flow" class="btn-primary">
+                🚀 Start Guided Flow (Recommended)
+            </a>
+            <a href="/screen" class="btn-secondary">
+                📝 AQ-10 Screening
+            </a>
+            <a href="/facial-tracking" class="btn-secondary">
+                🎥 Face Analysis
+            </a>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- ==================== RESULTS STATE ==================== -->
+
+    <!-- Final Combined Score -->
+    <div class="form-card" style="text-align: center;">
+        <h2 style="margin-bottom: 24px;">🎯 Final Combined Score</h2>
+
+        <div class="result-score-box
+            {% if risk_level == 'low' %}score-green
+            {% elif risk_level == 'moderate' %}score-orange
+            {% else %}score-red{% endif %}">
+            <h1>{{ combined_score }}%</h1>
+            <p>{{ combined_risk }}</p>
+        </div>
+
+        <p style="color: var(--text2); font-size: 14px; margin-top: 12px;">
+            Combined from AQ-10 (60% weight) + Facial Analysis (40% weight)
+        </p>
+
+        <!-- Score range explanation -->
+        <div class="score-range-box" style="text-align: left;
+                                             margin-top: 24px;">
+            <h3>📊 What does your combined score mean?</h3>
+            <div class="score-ranges">
+                <div class="score-range-item safe
+                    {% if combined_score >= 65 %}active-range{% endif %}">
+                    <span class="range-label">✅ Safe Zone</span>
+                    <span class="range-value">65–100%</span>
+                    <span class="range-desc">
+                        Low autism risk. Behavioral patterns appear typical.
+                        Routine monitoring recommended.
+                        {% if combined_score >= 65 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item moderate
+                    {% if combined_score >= 40 and combined_score < 65 %}active-range{% endif %}">
+                    <span class="range-label">⚠️ Moderate Zone</span>
+                    <span class="range-value">40–64%</span>
+                    <span class="range-desc">
+                        Some indicators present. Professional assessment
+                        recommended for clarity.
+                        {% if combined_score >= 40 and combined_score < 65 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+                <div class="score-range-item extreme
+                    {% if combined_score < 40 %}active-range{% endif %}">
+                    <span class="range-label">🚨 High Risk Zone</span>
+                    <span class="range-value">0–39%</span>
+                    <span class="range-desc">
+                        Multiple strong indicators. Immediate professional
+                        consultation strongly advised.
+                        {% if combined_score < 40 %}
+                        <br><strong>← Your score is here</strong>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Individual Score Breakdown -->
+    <div class="form-card">
+        <h2>📊 Individual Score Breakdown</h2>
+        <div class="metrics-grid" style="margin-top: 20px;">
+
+            <div class="metric-card">
+                <span class="metric-icon">📝</span>
+                <h3 style="font-size: 16px;
+                           background: var(--gradient);
+                           -webkit-background-clip: text;
+                           -webkit-text-fill-color: transparent;">
+                    {{ aq10_result }}
+                </h3>
+                <p>AQ-10 Result</p>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-icon">🎯</span>
+                <h3>{{ aq10_confidence }}%</h3>
+                <p>AQ-10 Confidence</p>
+                <div style="margin-top: 8px;">
+                    {% if aq10_confidence <= 40 %}
+                    <span class="badge badge-green">✅ Safe Zone</span>
+                    {% elif aq10_confidence <= 69 %}
+                    <span class="badge"
+                          style="background:rgba(245,158,11,0.15);
+                                 color:#fcd34d;">⚠️ Moderate</span>
+                    {% else %}
+                    <span class="badge badge-red">🚨 High Risk</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-icon">🎥</span>
+                <h3>{{ behavioral_score }}%</h3>
+                <p>Behavioral Score</p>
+                <div style="margin-top: 8px;">
+                    {% if behavioral_score >= 70 %}
+                    <span class="badge badge-green">✅ Low Risk</span>
+                    {% elif behavioral_score >= 45 %}
+                    <span class="badge"
+                          style="background:rgba(245,158,11,0.15);
+                                 color:#fcd34d;">⚠️ Moderate</span>
+                    {% else %}
+                    <span class="badge badge-red">🚨 High Risk</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-icon">👁️</span>
+                <h3>{{ latest_facial['eye_contact'] }}%</h3>
+                <p>Eye Contact Score</p>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-icon">😑</span>
+                <h3>{{ latest_facial['blink_rate'] }}</h3>
+                <p>Blink Rate (bpm)</p>
+            </div>
+
+            <div class="metric-card">
+                <span class="metric-icon">🔄</span>
+                <h3>{{ latest_facial['head_movement'] }}%</h3>
+                <p>Head Stability</p>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Complete Score Reference Table -->
+    <div class="form-card">
+        <h2>📋 Complete Score Reference Guide</h2>
+        <p style="color: var(--text2); font-size: 14px;
+                  margin: 8px 0 16px;">
+            Use this table to understand what every score means
+            and where your results fall.
+        </p>
+        <div style="overflow-x: auto;">
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th style="color: var(--success);">
+                            ✅ Safe Zone
+                        </th>
+                        <th style="color: var(--warning);">
+                            ⚠️ Moderate Zone
+                        </th>
+                        <th style="color: var(--danger);">
+                            🚨 High Risk Zone
+                        </th>
+                        <th>Your Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Combined Score</strong></td>
+                        <td style="color:var(--success);">65–100%</td>
+                        <td style="color:var(--warning);">40–64%</td>
+                        <td style="color:var(--danger);">0–39%</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if combined_score >= 65 %}var(--success)
+                            {% elif combined_score >= 40 %}var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ combined_score }}%
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>AQ-10 Confidence</strong></td>
+                        <td style="color:var(--success);">0–40%</td>
+                        <td style="color:var(--warning);">41–69%</td>
+                        <td style="color:var(--danger);">70–100%</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if aq10_confidence <= 40 %}var(--success)
+                            {% elif aq10_confidence <= 69 %}var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ aq10_confidence }}%
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Behavioral Score</strong></td>
+                        <td style="color:var(--success);">70–100%</td>
+                        <td style="color:var(--warning);">45–69%</td>
+                        <td style="color:var(--danger);">0–44%</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if behavioral_score >= 70 %}var(--success)
+                            {% elif behavioral_score >= 45 %}var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ behavioral_score }}%
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Eye Contact</strong></td>
+                        <td style="color:var(--success);">&gt; 70%</td>
+                        <td style="color:var(--warning);">40–70%</td>
+                        <td style="color:var(--danger);">&lt; 40%</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if latest_facial['eye_contact'] > 70 %}var(--success)
+                            {% elif latest_facial['eye_contact'] >= 40 %}var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ latest_facial['eye_contact'] }}%
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Blink Rate</strong></td>
+                        <td style="color:var(--success);">12–22 bpm</td>
+                        <td style="color:var(--warning);">8–11 or 23–28</td>
+                        <td style="color:var(--danger);">&lt;8 or &gt;28</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if latest_facial['blink_rate'] >= 12
+                                   and latest_facial['blink_rate'] <= 22 %}
+                                var(--success)
+                            {% elif latest_facial['blink_rate'] >= 8
+                                    and latest_facial['blink_rate'] <= 28 %}
+                                var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ latest_facial['blink_rate'] }} bpm
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Head Stability</strong></td>
+                        <td style="color:var(--success);">&gt; 70%</td>
+                        <td style="color:var(--warning);">40–70%</td>
+                        <td style="color:var(--danger);">&lt; 40%</td>
+                        <td>
+                            <strong
+                            style="color:
+                            {% if latest_facial['head_movement'] > 70 %}var(--success)
+                            {% elif latest_facial['head_movement'] >= 40 %}var(--warning)
+                            {% else %}var(--danger){% endif %}">
+                                {{ latest_facial['head_movement'] }}%
+                            </strong>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="form-card">
+        <h2>✅ What You Should Do</h2>
+        <ul class="recommendation-list dos-list">
+            {% for item in dos %}
+            <li>
+                <span class="rec-icon">✅</span>
+                <span>{{ item }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="form-card">
+        <h2>❌ What You Should NOT Do</h2>
+        <ul class="recommendation-list donts-list">
+            {% for item in donts %}
+            <li>
+                <span class="rec-icon">❌</span>
+                <span>{{ item }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer-card">
+        ⚠️ This combined assessment is generated by an AI screening tool
+        and does NOT constitute a medical diagnosis. Always consult a
+        qualified healthcare professional for formal evaluation.
+    </div>
+
+    <!-- Actions -->
+    <div class="result-actions" style="flex-wrap: wrap; gap: 12px;">
+        <a href="/download-report" class="btn-primary">
+            📄 Download Full Report
+        </a>
+        <a href="/guided-flow" class="btn-secondary">
+            🚀 Start New Guided Flow
+        </a>
+        <a href="/dashboard" class="btn-secondary">
+            📊 Dashboard
+        </a>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock %}

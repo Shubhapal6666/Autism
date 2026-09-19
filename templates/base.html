@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AutismAI{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-container">
+
+        <a href="/" class="nav-logo">
+            🧠 <span>AutismAI</span>
+        </a>
+
+        <ul class="nav-links">
+            <li>
+                <a href="/"
+                   class="{% if request.path == '/' %}nav-active{% endif %}">
+                   Home
+                </a>
+            </li>
+            <li>
+                <a href="/about"
+                   class="{% if request.path == '/about' %}nav-active{% endif %}">
+                   About Autism
+                </a>
+            </li>
+            <li>
+                <a href="/history"
+                   class="{% if request.path == '/history' %}nav-active{% endif %}">
+                   History
+                </a>
+            </li>
+
+            {% if session.get('user_id') %}
+                <li>
+                    <a href="/guided-flow" class="btn-nav">
+                        🚀 Guided Flow
+                    </a>
+                </li>
+                <li>
+                    <a href="/dashboard"
+                       class="{% if request.path == '/dashboard' %}nav-active{% endif %}">
+                       Dashboard
+                    </a>
+                </li>
+
+                <!-- User dropdown -->
+                <li class="dropdown">
+                    <button class="dropdown-btn">
+                        👤 {{ session['name'].split()[0] }} ▾
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="/screen">📝 AQ-10 Screening</a>
+                        <a href="/facial-tracking">🎥 Face Analysis</a>
+                        <a href="/combined-result">🧠 Combined Result</a>
+                        <div class="dropdown-divider"></div>
+                        <a href="/profile">👤 My Profile</a>
+                        <a href="/download-report">📄 Download Report</a>
+                        {% if session.get('is_admin') %}
+                        <a href="/admin"
+                           style="color: var(--warning);">
+                           🔧 Admin Panel
+                        </a>
+                        {% endif %}
+                        <div class="dropdown-divider"></div>
+                        <a href="/logout"
+                           style="color: var(--danger);">
+                           🚪 Logout
+                        </a>
+                    </div>
+                </li>
+
+            {% else %}
+                <li>
+                    <a href="/login"
+                       class="{% if request.path == '/login' %}nav-active{% endif %}">
+                       Login
+                    </a>
+                </li>
+                <li>
+                    <a href="/signup" class="btn-nav">Get Started</a>
+                </li>
+            {% endif %}
+        </ul>
+
+        <!-- Dark / Light toggle -->
+        <button class="theme-toggle" onclick="toggleTheme()"
+                title="Toggle theme">
+            <i class="fa fa-moon" id="theme-icon"></i>
+        </button>
+
+    </div>
+</nav>
+
+<!-- PAGE CONTENT -->
+<main>
+    {% block content %}{% endblock %}
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-brand">
+            <h3>🧠 AutismAI</h3>
+            <p>AI-powered autism screening tool built for awareness
+               and early detection.</p>
+        </div>
+        <div class="footer-links">
+            <h4>Pages</h4>
+            <a href="/">Home</a>
+            <a href="/about">About Autism</a>
+            <a href="/history">History</a>
+        </div>
+        <div class="footer-links">
+            <h4>Tools</h4>
+            <a href="/guided-flow">🚀 Guided Flow</a>
+            <a href="/screen">AQ-10 Screening</a>
+            <a href="/facial-tracking">Face Analysis</a>
+            <a href="/combined-result">Combined Result</a>
+        </div>
+        <div class="footer-links">
+            <h4>Account</h4>
+            {% if session.get('user_id') %}
+                <a href="/dashboard">Dashboard</a>
+                <a href="/profile">My Profile</a>
+                <a href="/download-report">Download Report</a>
+                <a href="/logout">Logout</a>
+            {% else %}
+                <a href="/login">Login</a>
+                <a href="/signup">Sign Up</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>© 2024 AutismAI — Built as a college project using
+           Machine Learning & Flask</p>
+    </div>
+</footer>
+
+<script>
+    function toggleTheme() {
+        const html = document.documentElement;
+        const icon = document.getElementById('theme-icon');
+        if (html.getAttribute('data-theme') === 'dark') {
+            html.setAttribute('data-theme', 'light');
+            icon.className = 'fa fa-sun';
+            localStorage.setItem('theme', 'light');
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            icon.className = 'fa fa-moon';
+            localStorage.setItem('theme', 'dark');
+        }
+    }
+
+    window.onload = function() {
+        const saved = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        document.getElementById('theme-icon').className =
+            saved === 'dark' ? 'fa fa-moon' : 'fa fa-sun';
+    }
+
+    // Dropdown
+    document.addEventListener('click', function(e) {
+        const dropdown = document.querySelector('.dropdown');
+        if (!dropdown) return;
+        if (dropdown.contains(e.target)) {
+            dropdown.classList.toggle('open');
+        } else {
+            dropdown.classList.remove('open');
+        }
+    });
+</script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>
